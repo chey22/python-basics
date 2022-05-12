@@ -1,0 +1,56 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "deploy_public"
+  deploy_public:
+    # The type of runner that the job will run on
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+            fetch-depth: 0 # Don't make a shallow clone or Heroku will reject the push
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+        
+      - name: Display commit info
+        run: |
+            echo "github.ref is ${{github.ref}}"
+            echo "HEAD commit is $(git rev-parse HEAD)"
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
+          
+      - name: Deploy Main to Public
+        env:
+          HEROKU_APP_NAME: python-basics
+        run: |
+            echo "deploy command would be \"git push https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git HEAD:master --force\""
+            git push https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git HEAD:master --force
+            
+      - name: Report Nothing to Do
+        if: github.ref != 'refs/heads/main'
+        run: echo "Branch isn't main, so no deploy to do!"
