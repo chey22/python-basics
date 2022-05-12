@@ -46,7 +46,7 @@ jobs:
           
       - name: Deploy Main to Public
         env:
-          HEROKU_APP_NAME: python-basics
+          HEROKU_APP_NAME: beginner-python
         run: |
             echo "deploy command would be \"git push https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git HEAD:master --force\""
             git push https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git HEAD:master --force
